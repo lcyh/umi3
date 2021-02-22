@@ -60,7 +60,7 @@ const HomePage = () => {
     forceUpdate({});
   };
   return (
-    <div className={styles['home']}>
+    <div className={styles['profile']}>
       <Form
         form={form}
         name="dynamic_form_nest_item"
@@ -77,7 +77,7 @@ const HomePage = () => {
               key: 0,
               name: 0,
               name1: '1111',
-              name2: '222',
+              name2: ['222'],
               name3: '333',
             },
             {
@@ -86,7 +86,7 @@ const HomePage = () => {
               key: 1,
               name: 1,
               name1: '你好',
-              name2: '阿斯顿',
+              name2: ['电风扇地方'],
               name3: '法国的',
             },
           ],
