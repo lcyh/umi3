@@ -48,7 +48,7 @@ export default {
       data:{
         name: 'Colin',
         avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-        userid: '00000001',
+        userid: '111',
         email: 'antdesign@alipay.com',
         title: '交互专家',
         notifyCount: 12,
