@@ -47,7 +47,12 @@ class AuthStore {
     // 如果没有登录，重定向到 login
     if (!(data?.userid) && location.pathname !== '/login') {
       history.push('/login');
+      sysLoginOut();
       return;
+    }
+     //  兼容 SSO 登录模式下，无法获取到 用户名 的问题,存储用户信息
+     if (data.userid) {
+      window.localStorage.setItem('__USER_ACCOUNT__', data.userid);
     }
     this.currentUserInfo = data || {};
     return data;
@@ -65,10 +70,7 @@ class AuthStore {
       message.error('权限菜单为空');
       return sysLoginOut();
     }
-    //  兼容 SSO 登录模式下，无法获取到 用户名 的问题,存储用户信息
-    if (data.userName) {
-      window.localStorage.setItem('__USER_ACCOUNT__', data.userName);
-    }
+   
     this.menuList = data.authList;
     //  设置一个默认值，防止未匹配的情况
     this.currentFirstMenu = this.menuList[0].id;

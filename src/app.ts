@@ -12,7 +12,7 @@ Layout 插件、Access 插件以及用户都可以通过 useModel('@@initialStat
 */
 export async function getInitialState() {
   // const permissions = await fetchUserPermissions();
-  const permissions={
+  const permissions = {
     userId:'110', 
     role:'admin',
     hasRoutes:['/abtest/experiment','/abtest/audience'] 

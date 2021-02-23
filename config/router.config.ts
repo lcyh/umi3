@@ -10,6 +10,11 @@ export default [
     exact: true,
   },
   {
+    path: "/403",
+    exact: true,
+    component: './403',
+  },
+  {
     path: '/',
     component: '../layouts/BasicLayout',
     routes: routes
