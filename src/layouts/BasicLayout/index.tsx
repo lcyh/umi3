@@ -79,6 +79,10 @@ export default class BasicLayout extends React.PureComponent<
     };
   }
   async componentDidMount() {
+    // 初始化
+    await this.handleInitMenu();
+  }
+  handleInitMenu = async () => {
     // 用户信息
     const userInfo = await stores.authStore.getCurrentUserData();
     // 获取账号菜单列表
@@ -112,7 +116,7 @@ export default class BasicLayout extends React.PureComponent<
         });
       },
     );
-  }
+  };
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
@@ -288,23 +292,36 @@ export default class BasicLayout extends React.PureComponent<
       </Menu>
     );
   };
-  getCurrentRoute = () => {
+  getCurrentRoute = (currentPath?: string) => {
     // 获取当前路径信息
     const { location } = this.props;
     const { menuData } = this.state;
     if (!location || !location.pathname || location.pathname.length < 3) {
       return null;
     }
+    let currentPathName = currentPath || location.pathname;
     let oneLevel = '',
       twoLevel = '',
-      threeLevel = '';
+      threeLevel = '',
+      firstLevelPath = '',
+      secondLevelPath = '',
+      thirdLevelPath = '',
+      currentThirdMenuId,
+      currentSecondMenuId,
+      currentFirstMenuId;
     menuData!.forEach((firstLevel) => {
       firstLevel.children.forEach((secondLevel: any) => {
         secondLevel.children.forEach((thirdLevel: any) => {
-          if (thirdLevel.path === location.pathname) {
+          if (thirdLevel.path === currentPathName) {
             threeLevel = thirdLevel.name;
             twoLevel = secondLevel.name;
             oneLevel = firstLevel.name;
+            firstLevelPath = firstLevel.path;
+            secondLevelPath = secondLevel.path;
+            thirdLevelPath = thirdLevel.path;
+            currentThirdMenuId = thirdLevel.id;
+            currentSecondMenuId = secondLevel.id;
+            currentFirstMenuId = firstLevel.id;
             return;
           }
         });
@@ -315,7 +332,22 @@ export default class BasicLayout extends React.PureComponent<
       oneLevel,
       twoLevel,
       threeLevel,
+      firstLevelPath,
+      secondLevelPath,
+      thirdLevelPath,
+      headerMenuKeys: [`${currentFirstMenuId}`],
+      subMenuOpenKeys: [`${currentSecondMenuId}`],
+      subMenuItemKeys: [`${currentThirdMenuId}`],
     };
+  };
+  handleClickBreadCrumbJump = (path: string) => {
+    this.props.history.push(path);
+    const currentRoute = this.getCurrentRoute(path);
+    if (!currentRoute) {
+      return null;
+    }
+    const { headerMenuKeys, subMenuOpenKeys, subMenuItemKeys } = currentRoute;
+    this.setState({ headerMenuKeys, subMenuOpenKeys, subMenuItemKeys });
   };
   getBreadcrumb = () => {
     // 面包屑获取当前页面名称
@@ -323,13 +355,32 @@ export default class BasicLayout extends React.PureComponent<
     if (!currentRoute) {
       return null;
     }
-    const { oneLevel, twoLevel, threeLevel } = currentRoute;
+    const {
+      oneLevel,
+      twoLevel,
+      threeLevel,
+      firstLevelPath,
+      secondLevelPath,
+      thirdLevelPath,
+    } = currentRoute;
     return (
       <div className={styles['breadcrumb-wrapper']}>
         <Breadcrumb className={styles['breadcrumb-list']} separator={'/'}>
-          <Breadcrumb.Item>{oneLevel || '未配置'}</Breadcrumb.Item>
-          <Breadcrumb.Item>{twoLevel || '未配置'}</Breadcrumb.Item>
-          <Breadcrumb.Item>{threeLevel || '未配置'}</Breadcrumb.Item>
+          <Breadcrumb.Item
+            onClick={() => this.handleClickBreadCrumbJump(firstLevelPath)}
+          >
+            {oneLevel || '未配置'}
+          </Breadcrumb.Item>
+          <Breadcrumb.Item
+            onClick={() => this.handleClickBreadCrumbJump(secondLevelPath)}
+          >
+            {twoLevel || '未配置'}
+          </Breadcrumb.Item>
+          <Breadcrumb.Item
+            onClick={() => this.handleClickBreadCrumbJump(thirdLevelPath)}
+          >
+            {threeLevel || '未配置'}
+          </Breadcrumb.Item>
         </Breadcrumb>
       </div>
     );

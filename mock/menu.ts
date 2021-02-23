@@ -11,7 +11,7 @@ export const menuData = [
         id: 11,
         name: 'ABtest',
         title: 'ABtest',
-        path: '/abtest',
+        path: '/abtest/experiment',
         reportUrl: '',
         visible: 1,
         children: [
@@ -68,7 +68,7 @@ export const menuData = [
         id: 21,
         name: 'demo-数据',
         title: 'demo',
-        path: '/demo',
+        path: '/demo/list',
         reportUrl: '',
         visible: 1,
         children: [

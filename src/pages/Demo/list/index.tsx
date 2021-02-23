@@ -1,180 +1,86 @@
-import React, { useState, useRef } from 'react';
-import { message, Button, Input, Tag } from 'antd';
-import ProForm, { ProFormText } from '@ant-design/pro-form';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import { EditableProTable } from '@ant-design/pro-table';
-import { PlusOutlined } from '@ant-design/icons';
+import React, { PropsWithChildren, useEffect, useContext } from 'react';
+import { Button, Input } from 'antd';
+import { RouteComponentProps } from 'react-router-dom';
+import {
+  useHistory,
+  useLocation,
+  useRouteMatch,
+  useActivate,
+  useUnactivate,
+  AliveController,
+  KeepAlive,
+  useAliveController,
+} from 'umi';
+import Counter from '@/components/Counter';
+import { useStore } from '@/layouts/BasicLayout/context';
+import styles from './index.less';
 
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
+const { TextArea } = Input;
+type Prop = PropsWithChildren<RouteComponentProps> & AliveController;
+
+const DemoPage = (props: any) => {
+  const history = useHistory();
+  const location = useLocation();
+  const match = useRouteMatch();
+  const { drop } = useAliveController();
+  const store = useStore();
+  console.log('demo-list-props-store', { props, store });
+
+  useEffect(() => {
+    // POP(goBack,点击左上角返回箭头),replace时清除上个页面的缓存,PUSH时,缓存当前页面
+    if (props.history.action === 'POP') {
+      drop('/demo/detail');
+    }
+    return () => {
+      console.log('卸载-useEffect-props', props);
+    };
+  }, []);
+  useActivate(() => {
+    console.log('didActivate-激活-TestFunction: props', props);
   });
-};
 
-type DataSourceType = {
-  id: React.Key;
-  game_status?: string;
-  editable?: boolean;
-  status?: string;
-  title?: string;
-  decs?: string;
-  state?: any[];
-  created_at?: string;
-  children?: DataSourceType[];
-};
-
-let defaultData: DataSourceType[] = [
-  {
-    id: 624748504,
-    game_status: 'single',
-    title: '活动名称一',
-    decs: '这个活动真好玩',
-    status: '元神',
-    state: [{ key: 'woman', label: '川妹子' }],
-    created_at: '2020-05-26T09:42:56Z',
-  },
-  {
-    id: 624691229,
-    game_status: 'multiple',
-    title: '活动名称二',
-    decs: '这个活动真好玩',
-    status: '公主联结',
-    state: [{ key: 'man', label: '西北汉子' }],
-    created_at: '2020-05-26T08:19:22Z',
-  },
-];
-
-const columns: ProColumns<DataSourceType>[] = [
-  {
-    title: '活动名称',
-    dataIndex: 'title',
-    width: '30%',
-    editable: (text, record) => {
-      return record.editable!;
-    },
-  },
-  {
-    title: '游戏类型',
-    key: 'game_status',
-    dataIndex: 'game_status',
-    editable: (text, record) => {
-      return record.editable!;
-    },
-    valueType: 'select',
-    valueEnum: {
-      all: { text: '全部', status: 'Default' },
-      single: {
-        text: '单游戏',
-        status: 'single',
-      },
-      multiple: {
-        text: '多游戏',
-        status: 'multiple',
-      },
-    },
-  },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    editable: (text, record) => {
-      return record.editable!;
-    },
-  },
-  {
-    title: '描述',
-    dataIndex: 'decs',
-    editable: (text, record) => {
-      return record.editable!;
-    },
-    formItemProps: {
-      rules: [
-        {
-          required: true,
-          message: '此项为必填项',
-        },
-      ],
-    },
-  },
-  {
-    title: '操作',
-    valueType: 'option',
-  },
-];
-
-export default () => {
-  const actionRef = useRef<ActionType>();
-  const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
-  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
-    defaultData.map((item, index) => {
-      return item.id;
-    }),
-  );
-  defaultData = defaultData.map((item) => ({ ...item, editable: false }));
-
+  useUnactivate(() => {
+    console.log('willUnactivate-卸载-TestFunction: props', props);
+  });
+  const handleJump = () => {
+    console.log('demo列表页-props', { props, history, location, match });
+    history.push('/demo/detail');
+  };
+  const handleDropCache = () => {
+    // 如果关闭激活中的 KeepAlive Tab，需要先离开当前路由
+    // 触发 KeepAlive unactivated 后再进行 drop
+    // const unlisten = history.listen(() => {
+    //   unlisten();
+    //   setTimeout(() => {
+    //     dropScope('/demo/list');
+    //   }, 60);
+    // });
+    history.push('/demo/detail');
+    setTimeout(() => {
+      // dropScope('/demo/list');
+      drop('/demo/list');
+      // clear();
+    }, 60);
+  };
   return (
-    <ProForm<{
-      name: string;
-      company: string;
-    }>
-      onFinish={async (values) => {
-        await waitTime(2000);
-        console.log(values);
-        message.success('提交成功');
-      }}
-      initialValues={{
-        name: '蚂蚁设计有限公司',
-        useMode: 'chapter',
-      }}
-    >
-      <ProForm.Group>
-        <ProFormText
-          width="md"
-          name="name"
-          label="签约客户名称"
-          tooltip="最长为 24 位"
-          placeholder="请输入名称"
-        />
-        <ProFormText
-          width="md"
-          name="company"
-          label="我方公司名称"
-          placeholder="请输入名称"
-        />
-      </ProForm.Group>
-      <ProFormText width="sm" name="id" label="主合同编号" />
-      <ProForm.Item
-        label="数组数据"
-        name="dataSource"
-        initialValue={defaultData}
-        trigger="onValuesChange"
-      >
-        <EditableProTable<DataSourceType>
-          rowKey="id"
-          actionRef={actionRef}
-          toolBarRender={false}
-          columns={columns}
-          recordCreatorProps={{
-            newRecordType: 'dataSource',
-            position: 'bottom',
-            record: () => ({
-              id: Date.now(),
-            }),
-            creatorButtonText: '添加',
-          }}
-          editable={{
-            type: 'multiple',
-            editableKeys,
-            onChange: setEditableRowKeys,
-            actionRender: (row, text, dom) => {
-              // console.log('row, text, dom', { row, text, dom });
-              return [dom.delete];
-            },
-          }}
-        />
-      </ProForm.Item>
-    </ProForm>
+    <KeepAlive name="/demo/list" saveScrollPosition="screen">
+      <div>
+        <h1 className={styles.title}>函数组件-demo-列表页</h1>
+        <h3>number:{props.number}</h3>
+        <TextArea showCount maxLength={100} />
+        <Counter />
+        {Array(100)
+          .fill('')
+          .map((item, idx) => (
+            <div key={idx}>demo-列表页-Item {idx + 1}</div>
+          ))}
+        <Button onClick={() => handleJump()}>
+          缓存列表页数据后-》跳转详情页
+        </Button>
+        <Button onClick={() => handleDropCache()}>清除缓存-》跳转详情页</Button>
+      </div>
+    </KeepAlive>
   );
 };
+export default DemoPage;
+// export default KeepAliveComponent(Demo, '/demo/list', 'screen');
