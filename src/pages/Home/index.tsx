@@ -111,9 +111,15 @@ const HomePage = () => {
         scrollToFirstError
         initialValues={{
           price: {
-            number: 1,
+            number: 2,
             currency: 'rmb',
           },
+          sights: [
+            {
+              gameType: '策略游戏',
+              game: ['公主连结'],
+            },
+          ],
         }}
       >
         <FormItemInline

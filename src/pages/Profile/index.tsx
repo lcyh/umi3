@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import { FieldData } from 'rc-field-form/lib/interface';
 import styles from './index.less';
+import AddGame from './components/addGame';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -16,6 +17,20 @@ const formItemLayout = {
 };
 const gameMapData: any = ['狩猎时刻', '公主连结', '元神'];
 
+const initVal = [
+  {
+    name1: '1111',
+    name2: ['222'],
+    name3: '333',
+    gameList: [{ gameType: '单游戏', game: '哈哈哈' }],
+  },
+  {
+    name1: '你好',
+    name2: ['电风扇地方'],
+    name3: '法国的',
+    gameList: [{ gameType: '元神', game: '是德国的风格' }],
+  },
+];
 const HomePage = () => {
   const [form] = Form.useForm();
   const [, forceUpdate] = useState<any>();
@@ -36,13 +51,13 @@ const HomePage = () => {
     const changeField: any = changedFields[0].name;
     console.log('~~~~changeField', changeField);
 
-    const [sights, rowIndex, type] = changeField;
-    const formValue = form.getFieldValue('sights');
+    const [profileInfo, rowIndex, type] = changeField;
+    const formValue = form.getFieldValue('profileInfo');
     const currentChangeValue =
-      sights &&
+      profileInfo &&
       rowIndex >= 0 &&
       type &&
-      form.getFieldValue('sights')[rowIndex][type];
+      form.getFieldValue('profileInfo')[rowIndex][type];
     if (type === 'name1' && currentChangeValue) {
       setCurrentGameType(currentChangeValue);
     }
@@ -70,74 +85,54 @@ const HomePage = () => {
         autoComplete="off"
         scrollToFirstError
         initialValues={{
-          sights: [
-            {
-              fieldKey: 0,
-              isListField: true,
-              key: 0,
-              name: 0,
-              name1: '1111',
-              name2: ['222'],
-              name3: '333',
-            },
-            {
-              fieldKey: 1,
-              isListField: true,
-              key: 1,
-              name: 1,
-              name1: '你好',
-              name2: ['电风扇地方'],
-              name3: '法国的',
-            },
-          ],
+          profileInfo: initVal,
         }}
       >
-        <Form.List name="sights">
+        <Form.List name="profileInfo">
           {(fields, { add, remove, move }) => (
             <>
               {fields.map((field, index) => (
-                <div
-                  key={field.key}
-                  style={{
-                    background: '#eee',
-                    position: 'relative',
-                    marginBottom: 10,
-                  }}
-                >
-                  <div>
-                    <Form.Item
-                      name={[field.name, 'name1']}
-                      label="字段名称1"
-                      rules={[{ required: true, message: '请填写' }]}
-                      {...formItemLayout}
-                    >
-                      {<Input maxLength={8} placeholder="请填写" />}
-                    </Form.Item>
-                    <Form.Item
-                      name={[field.name, 'name2']}
-                      label="字段名称2"
-                      rules={[
-                        { required: true, message: '请填写', type: 'array' },
-                      ]}
-                      {...formItemLayout}
-                    >
-                      <Select mode="multiple">
-                        {(gameMapData || []).map((item: any) => (
-                          <Option key={item} value={item}>
-                            {item}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      name={[field.name, 'name3']}
-                      label="字段名称3"
-                      rules={[{ required: true, message: '请填写' }]}
-                      {...formItemLayout}
-                    >
-                      {<TextArea maxLength={8} placeholder="请填写" />}
-                    </Form.Item>
-                  </div>
+                <div key={field.key} className={styles['profile-item']}>
+                  <Form.Item
+                    name={[field.name, 'name1']}
+                    label="字段名称1"
+                    rules={[{ required: true, message: '请填写' }]}
+                    {...formItemLayout}
+                  >
+                    {<Input maxLength={8} placeholder="请填写" />}
+                  </Form.Item>
+                  <Form.Item
+                    name={[field.name, 'name2']}
+                    label="字段名称2"
+                    rules={[
+                      { required: true, message: '请填写', type: 'array' },
+                    ]}
+                    {...formItemLayout}
+                  >
+                    <Select mode="multiple">
+                      {(gameMapData || []).map((item: any) => (
+                        <Option key={item} value={item}>
+                          {item}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name={[field.name, 'name3']}
+                    label="字段名称3"
+                    rules={[{ required: true, message: '请填写' }]}
+                    {...formItemLayout}
+                  >
+                    {<TextArea maxLength={8} placeholder="请填写" />}
+                  </Form.Item>
+                  <Form.Item
+                    name={[field.name, 'gameList']}
+                    label="游戏类"
+                    rules={[{ required: true, message: '请填写' }]}
+                    {...formItemLayout}
+                  >
+                    {<AddGame field={field} />}
+                  </Form.Item>
                   {fields && fields.length > 1 && (
                     <div
                       style={{
