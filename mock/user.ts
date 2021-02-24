@@ -125,9 +125,9 @@ export default {
     access = 'guest';
   },
   //退出
-  'GET /api/login/outLogin': (req: Request, res: Response) => {
+  'POST /api/login/outLogin': (req: Request, res: Response) => {
     access = '';
-    res.send({ data: {}, success: true });
+    res.send({code:0, data: {token:null},message:'success', success: true });
   },
   //注册
   'POST /api/register': (req: Request, res: Response) => {

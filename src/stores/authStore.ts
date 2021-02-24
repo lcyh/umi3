@@ -2,7 +2,6 @@ import { observable, action } from 'mobx';
 import { message } from 'antd';
 import { auth } from '@/services';
 import { IAuthInfo, IAccountInfo, IMenuInfo } from 'auth-store-module';
-import { sysLoginOut } from '@/utils/request';
 import {history} from 'umi';
 
 // 登录注册状态
@@ -47,7 +46,7 @@ class AuthStore {
     // 如果没有登录，重定向到 login
     if (!(data?.userid) && location.pathname !== '/login') {
       history.push('/login');
-      sysLoginOut();
+      await auth.sysLoginOut();
       return;
     }
      //  兼容 SSO 登录模式下，无法获取到 用户名 的问题,存储用户信息
@@ -68,7 +67,7 @@ class AuthStore {
     }
     if (!data.authList || data.authList.length === 0) {
       message.error('权限菜单为空');
-      return sysLoginOut();
+      return auth.sysLoginOut();
     }
    
     this.menuList = data.authList;

@@ -60,12 +60,6 @@ instance.interceptors.response.use(
     }
 );
 
-export const sysLoginOut = () => {
-    //  清除保存的信息
-    window.localStorage.removeItem("__USER_ACCOUNT__");
-    window.location.href = "/api/backendUser/account/loginOut";
-};
-
 /**
  * 上传图片接口
  * @param file

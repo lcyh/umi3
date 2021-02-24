@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer, Provider } from 'mobx-react';
 import { toJS } from 'mobx';
-import qs from 'qs';
+import { stringify } from 'querystring';
 import {
   Layout,
   ConfigProvider,
@@ -25,6 +25,7 @@ import {
   MenuFoldOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
+import { auth } from '@/services';
 moment.locale('zh-cn');
 
 const { Header, Sider, Content } = Layout;
@@ -37,8 +38,7 @@ const IconMap: any = {
   受众管理: 'audience',
 };
 export interface Route {
-  authority?: any;
-  inherited?: any;
+  exact?: boolean;
   path: string;
   component: any;
   name: any;
@@ -181,10 +181,26 @@ export default class BasicLayout extends React.PureComponent<
       menuData.find(({ id }) => headerMenuKeys!.includes(id + '')) || {};
     return currentFirstLevelMenu;
   };
-  handleLogout = async () => {
-    console.log('退出登录');
-    // await Service.loginOut();
-    // this.props.history.push('/login');
+
+  /**
+   * 退出登录并清除 localStorage，并且将当前的 url 保存
+   */
+  loginOut = async () => {
+    console.log('退出-this.props', this.props);
+    // 登出
+    await auth.sysLoginOut();
+    const { history, location } = this.props;
+    const { query = '', pathname } = location;
+    const { redirect } = query;
+    // Note: There may be security issues, please note
+    if (window.location.pathname !== '/login' && !redirect) {
+      history.replace({
+        pathname: '/login',
+        search: stringify({
+          redirect: pathname,
+        }),
+      });
+    }
   };
   renderHeaderMenu = () => {
     const { menuData, headerMenuKeys } = this.state;
@@ -219,7 +235,7 @@ export default class BasicLayout extends React.PureComponent<
             className={styles['user-info']}
             overlay={
               <Menu>
-                <Menu.Item onClick={this.handleLogout}>退出登录</Menu.Item>
+                <Menu.Item onClick={this.loginOut}>退出登录</Menu.Item>
               </Menu>
             }
           >
@@ -434,7 +450,6 @@ export default class BasicLayout extends React.PureComponent<
             // location,
             // history,
             // routes: menuData,
-            // query: qs.parse(location.search.substr(1)),
           }}
         >
           <ConfigProvider locale={zhCN}>

@@ -79,6 +79,8 @@ class LoginPage extends Component<ILoginProps, any> {
         message.success('登录成功！');
         this.handleJump();
         return;
+      } else {
+        message.error('登录失败，请重试！');
       }
     } catch (error) {
       message.error('登录失败，请重试！');

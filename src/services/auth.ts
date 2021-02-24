@@ -19,3 +19,11 @@ export const getCurrentUser = (): Promise<any> => {
 export const checkLogin = (): Promise<any> => {
     return post("/user/checkLogin", {});
 };
+
+// 退出登录
+export const sysLoginOut = () => {
+    //  清除保存的信息
+    localStorage.removeItem('token');
+    window.localStorage.removeItem('__USER_ACCOUNT__');
+    return post('/login/outLogin');
+};
