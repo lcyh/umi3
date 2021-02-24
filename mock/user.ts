@@ -11,7 +11,7 @@ const waitTime = (time: number = 100) => {
 
 async function getFakeCaptcha(req: Request, res: Response) {
   await waitTime(2000);
-  return res.json('captcha-xxx');
+  return res.json({data:'123',code:0,message:''});
 }
 
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
@@ -100,39 +100,25 @@ export default {
     },
   ],
   //登录
-  'POST /api/login/account': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body;
+  'POST /api/account/login': async (req: Request, res: Response) => {
+    const { account, verifyCode, type='' } = req.body;  // type 暂时不用，可以传 手机号还是用户名
     await waitTime(2000);
-    if (password === 'ant.design' && username === 'admin') {
+    if (account === '17621204427' && verifyCode === '123') {
       res.send({
+        code:0,
+        data:{token:'##token'},
         status: 'ok',
+        message:'success',
         type,
         currentAuthority: 'admin',
       });
       access = 'admin';
       return;
     }
-    if (password === 'ant.design' && username === 'user') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'user',
-      });
-      access = 'user';
-      return;
-    }
-    if (type === 'mobile') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      });
-      access = 'admin';
-      return;
-    }
-
     res.send({
+      code:9999,
       status: 'error',
+      message:'error',
       type,
       currentAuthority: 'guest',
     });
@@ -183,6 +169,6 @@ export default {
       path: '/base/category/list',
     });
   },
-
+  // 获取验证码
   'GET  /api/login/captcha': getFakeCaptcha,
 };
