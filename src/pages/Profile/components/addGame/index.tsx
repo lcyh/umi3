@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './index.less';
@@ -12,12 +12,22 @@ interface IValueProps {
 }
 
 interface IAddGameProps {
+  // 共用一个 form实例
+  form?: any;
   field?: any;
+  index: number;
   value?: IValueProps[];
   onChange?: (val: any) => void;
 }
 
-const AddGame = ({ field, value = [], onChange }: IAddGameProps) => {
+const AddGame = ({
+  form,
+  field,
+  index: FirstIndex,
+  value = [],
+  onChange,
+}: IAddGameProps) => {
+  const [secondIdnex, setSecondIndex] = useState(0);
   console.log('AddGame', { field, value });
 
   const triggerChange = (index: number, changedValue: any) => {
@@ -27,8 +37,16 @@ const AddGame = ({ field, value = [], onChange }: IAddGameProps) => {
         ...changedValue,
       };
       onChange(value);
+      setSecondIndex(index);
     }
   };
+
+  useEffect(() => {
+    let gameType = form.getFieldValue('profileInfo')![FirstIndex]?.gameInfo[
+      secondIdnex
+    ]?.gameType;
+    console.log('====', { gameType });
+  });
 
   const onInputChange = (
     index: number,
@@ -85,6 +103,10 @@ const AddGame = ({ field, value = [], onChange }: IAddGameProps) => {
                     >
                       {
                         <Input
+                          disabled={
+                            form.getFieldValue('profileInfo')![FirstIndex]
+                              ?.gameInfo[index]?.gameType === '策略游戏'
+                          }
                           onChange={(e) => onInputChange(index, e)}
                           style={{ width: '150px' }}
                           maxLength={8}

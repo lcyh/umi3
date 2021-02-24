@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Tooltip, Select } from 'antd';
+import { Form, Input, Button, Select } from 'antd';
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -33,7 +33,6 @@ const initVal = [
 ];
 const HomePage = () => {
   const [form] = Form.useForm();
-  const [, forceUpdate] = useState<any>();
   const [currentGameType, setCurrentGameType] = useState<any>();
   const onFinish = (values: any) => {
     console.log('Received values of form:', values);
@@ -69,11 +68,6 @@ const HomePage = () => {
     });
   };
 
-  const handleRemove = (item: any) => {
-    console.log('删除', item);
-    // 更新页面
-    forceUpdate({});
-  };
   return (
     <div className={styles['profile']}>
       <Form
@@ -131,7 +125,7 @@ const HomePage = () => {
                     rules={[{ required: true, message: '请填写' }]}
                     {...formItemLayout}
                   >
-                    {<AddGame field={field} />}
+                    {<AddGame field={field} form={form} index={index} />}
                   </Form.Item>
                   {fields && fields.length > 1 && (
                     <div
